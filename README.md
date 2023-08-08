@@ -272,3 +272,129 @@ This `serial_read_data` function ensures efficient and segmented reading of larg
 
 The `serial_read_data0` function is crucial for ensuring efficient and error-tolerant data reading from the OpenMV camera. By managing timeouts and chunked data reading, it offers a robust mechanism to retrieve image data for further processing or transmission.
 
+## OpenMV Code explanations
+
+**Imports**:
+- `import sensor, image, time, struct`: 
+    - These modules facilitate image capture, time management, and data structure manipulation within the OpenMV environment.
+- `from pyb import UART`: 
+    - Enables serial communication between the OpenMV camera and the STM32 Nucleo-144 board.
+
+---
+
+**Camera Configuration**:
+- `sensor.reset()`: Resets the camera to default, ensuring a clean start.
+- `sensor.set_pixformat(sensor.RGB565)`: Sets the pixel format, which determines the colors and depth of the captured image.
+- `sensor.set_framesize(sensor.QVGA)`: Configures the resolution of the image to QVGA (320x240 pixels).
+- `sensor.skip_frames(time = 2000)`: Allows the camera to stabilize by capturing and discarding frames for 2 seconds. This step is essential to ensure clear images post-initialization.
+
+---
+
+**UART Configuration for Communication with STM32 Nucleo-144 board**:
+- `uart = UART(3, 500000)`:
+    - Establishes a UART communication channel on UART port 3 at a baud rate of 500,000. This setup allows the OpenMV camera to listen for commands from the STM32 Nucleo-144 board and send data back.
+
+---
+
+**Continuous Monitoring and Image Capture Loop**:
+- `while(True)`:
+    - An endless loop that keeps the OpenMV camera continuously active and responsive to the STM32 Nucleo-144 board's requests.
+    - `if uart.any()`: 
+        - Listens for any incoming data on the UART from the STM32 Nucleo-144 board.
+        - `ret = uart.read(1)`: Reads one byte of data, which could be a command or a part of a longer message.
+        - `if ret[0] == 0x96`: 
+            - Recognizes the synchronization byte (`0x96`). This byte is essentially a command from the STM32 Nucleo-144 board, signaling the OpenMV camera to capture an image.
+            - **Image Capture and Transmission**:
+                - `img = sensor.snapshot()`: Captures an image.
+                - `img.to_jpeg()`: Converts the raw image to a more compact JPEG format, suitable for transmission.
+                - `length = img.size()`: Determines the size of the JPEG image in bytes.
+                - `lenstr = struct.pack('>I', length)`: Packages the size data into a 4-byte format (big endian), which will likely be sent first to the STM32 Nucleo-144 board to inform it of the incoming image data's size.
+                - `imgbuf = img.bytearray()`: Prepares the JPEG image for transmission by converting it into a byte array.
+
+---
+
+**Sending Image Metadata and Image Data to STM32 Nucleo-144 board**:
+
+- **Send Image Length**:
+    - `print(lenstr)`: Outputs the 4-byte representation of the image size, for debugging purposes.
+    - `uart.write(lenstr)`: Sends the 4-byte image length to the STM32 Nucleo-144 board over UART. This informs the board of how much data it should expect when the actual image is transmitted.
+    - `time.sleep_ms(100)`: Introduces a short delay to ensure the image length data is received by the board before the image data is sent.
+
+- **Chunked Image Transmission**:
+    - The code then proceeds to send the image data in chunks to better manage the transmission of potentially large image data over UART.
+    - `start = 0`: Initializes the starting index for the chunked data transmission.
+    - `maxsize = 1024`: Sets the maximum chunk size to 1024 bytes. This determines how much image data will be sent in a single transmission.
+    - `while length > 0`: Continues sending chunks until all image data is transmitted.
+        - Within the loop, the code checks if the remaining image data is less than or equal to the maximum chunk size (`maxsize`). If so, it sends the remaining data. Otherwise, it sends a chunk of size `maxsize`.
+        - The `sent` variable captures how many bytes were successfully transmitted in the last operation.
+        - The `start` and `length` variables are updated to track the position in the image buffer and the remaining data to be sent.
+        - The commented-out `time.sleep_ms(1)` could have been used to introduce a delay between chunks, ensuring reliable data transmission.
+
+This chunked transmission ensures efficient and reliable data transfer, especially when dealing with larger image files. The STM32 Nucleo-144 board, running the Arduino code, is expected to receive this data, process it, and potentially send it over the network or perform other operations.
+
+
+## Python (Flask server) Code explanations
+
+**Imports**:
+- **Flask, request, send_file, render_template**: Modules from the Flask framework to handle web server operations, manage requests, send files, and render HTML templates.
+- **os**: Module for interacting with the operating system, mainly for file handling.
+- **time**: Module to fetch the current time, which is used for generating unique filenames.
+- **InfluxDB_v1 as idb**: Imports a custom module (to interact with InfluxDB, a time series database), which is used for logging and data storage.
+
+---
+
+**Initialization**:
+- `app = Flask(__name__)`: Initializes the Flask web application.
+- `ts = idb.InfluxDB(bucket="AIoT")`: Instantiates an object for interacting with InfluxDB, specifying a "bucket" named "AIoT".
+
+---
+
+**Function `index()`**:
+- **Route**: `@app.route('/')`
+- **Purpose**: Handles the root URL of the web server and renders an index page.
+- **Functionality**:
+    - `return render_template('index.html')`: Renders and returns the 'index.html' template. This template is a simple web page to interact with the server for testing.
+
+---
+
+**Function `upload()`**:
+- **Route**: `@app.route('/upload', methods=['POST'])`
+- **Purpose**: Manages the POST request for uploading images. This endpoint is where the STM32 Nucleo-144 board sends the captured image.
+- **Functionality**:
+    - `text_data = request.form.get('text')`: Extracts textual data from the POST request. This is a metadata associated with the image.
+    - `image_data = request.files.get('image')`: Retrieves the image file sent in the POST request.
+    - `timestamp = int(time.time())`: Generates a timestamp for unique filename creation.
+    - `filename = f"{text_data}_{timestamp}.jpg"`: Constructs a unique filename using the textual data and timestamp.
+    - `file_path = os.path.join("images", filename)`: Determines the path to save the image in the "images" directory.
+    - `image_data.save(file_path)`: Saves the uploaded image to the specified path.
+    - `base_url = request.base_url.rsplit('/', 1)[0]`: Derives the base URL for constructing the image access URL.
+    **Generating Image URL**:
+    - `image_url = f"{base_url}/{file_path}"`: Constructs the direct URL for accessing the uploaded image.
+    **Storing Data in Time-Series Database**:
+    - `measure = text_data`: Fetches the textual data associated with the image.
+    - `ts.write(measure, ["device", text_data], ["image_url", image_url])`: 
+       - Using the InfluxDB interface (`ts`), this line logs the image data. 
+       - The first argument likely represents the measurement name or table in InfluxDB.
+       - The subsequent arguments might represent tag-key pairs and field-key pairs. This structure allows for categorization and data storage in a time-series manner.
+    **Returning the Image URL in `upload()` function**:
+    - `return image_url`: After processing the POST request and saving the image, the server sends back the direct URL (`image_url`) of the stored image as the response. This URL allows the STM32 Nucleo-144 board (or any other client that uploaded the image) to know where the image is accessible on the web server. This is crucial as the STM32 Nucleo-144 board can then utilize this URL for further processing, sharing, or any other operations that require access to the uploaded image.
+
+---
+
+**Function `get_image(filename)`**:
+- **Route**: `@app.route('/images/<filename>')`
+- **Purpose**: Provides access to the uploaded images based on the filename.
+- **Functionality**:
+    - `return send_file(os.path.join("images", filename))`: Fetches the requested image from the "images" directory and sends it as a response. This function allows for direct access to the images via their unique URLs.
+
+---
+
+**Starting the Web Server**:
+- `if __name__ == '__main__':`
+    - This conditional ensures the server only runs if the script is executed directly (and not imported elsewhere).
+    - `app.run(host='0.0.0.0', port=5000)`: Starts the Flask web server, making it accessible on all network interfaces (`0.0.0.0`) and listening on port 5000.
+
+---
+
+In summary, this Flask web server code, `ImageUplader1.py`, creates a simple server to handle the image uploads from the STM32 Nucleo-144 board (which receives the images from the OpenMV camera). Upon receiving an image, the server saves it with a unique filename, logs the image data in a time-series database, and provides direct access to the images via URLs.
+
