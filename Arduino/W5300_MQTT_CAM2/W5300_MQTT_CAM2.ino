@@ -1,21 +1,14 @@
 /*
-  Telnet client
+[Summary of the code]
+Arduino code for STM32 Nucleo-144 board.
+It uses W5300-TOE-Shield for internet connections (HTTP, MQTT).
+For the W5300 connection, it uses the Serial3 port
+For the OpenMV camera connection, it uses the Serial port.
+It received a capture command through MQTT and send the request to OpenMV camera via the Serial port.
+It receives a captured image via the Serial port and send it to the HTTP server with POST method.
+Once it receives a HTTPP response, it publish the response to the MQTT broker.
+*/
 
- This sketch connects to a a telnet server (http://www.google.com)
- using an Arduino Wiznet Ethernet shield.  You'll need a telnet server
- to test this with.
- Processing's ChatServer example (part of the network library) works well,
- running on port 10002. It can be found as part of the examples
- in the Processing application, available at
- http://processing.org/
-
- Circuit:
- * Ethernet shield attached to pins 10, 11, 12, 13
-
- created 14 Sep 2010
- modified 9 Apr 2012
- by Tom Igoe
- */
 
 #include <Ethernet.h>
 #include <Wire.h>
@@ -100,8 +93,6 @@ void httpPostForm(byte *imageData, uint32_t imageSize) {
   // Append the image data
   requestBody += "\r\n--ArduinoBoundary_OpenMVCam1\r\n";
   requestBody += "Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n\r\n";
-
-  //requestBody.append(imageData, imageSize);
 
   // Append the closing boundary
   String requestBodyEnd = "";
@@ -242,15 +233,12 @@ void reconnect() {
 //===================================================================================================
 
 void setup() {
-    // Open serial communications and wait for port to open:
+    // Open serial communications for W5300-TOE-Shield and wait for port to open:
   Serial3.setRx(PC11);
   Serial3.setTx(PC10);  
   delay(50);
   
-  // Open serial communications and wait for port to open:
-#ifdef SERIAL_OUTPUT
-  Serial.begin(9600);
-#else
+  // Open serial communications for OpenMV camera and wait for port to open:
   Serial.setRx(0);
   Serial.setTx(1);  
   //Serial.begin(1000000);
@@ -258,7 +246,7 @@ void setup() {
   //Serial.begin(38400);
   //Serial.begin(19200);
   delay(50);
-#endif
+
 
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
