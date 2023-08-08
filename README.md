@@ -399,3 +399,88 @@ This chunked transmission ensures efficient and reliable data transfer, especial
 
 In summary, this Flask web server code, `ImageUplader1.py`, creates a simple server to handle the image uploads from the STM32 Nucleo-144 board (which receives the images from the OpenMV camera). Upon receiving an image, the server saves it with a unique filename, logs the image data in a time-series database, and provides direct access to the images via URLs.
 
+
+## Android Code (MainActivity.kt) explanations
+
+
+**Package Declaration and Imports**:
+- `package com.example.w5300_mqtt_cam`: Declares the package name for this Kotlin file.
+- **Imports**: 
+    - Various classes and functions are imported for Android development. This includes UI components like `WebView`, `Button`, and `EditText`, as well as classes for MQTT communication (`MqttClient` and related classes).
+
+---
+
+**MainActivity Class Declaration**:
+- `class MainActivity : AppCompatActivity()`: Declares the main activity of the Android app. This activity inherits from `AppCompatActivity`, which is a base class for activities that use the support library action bar features.
+
+---
+
+**Member Variable**:
+- `private lateinit var client: Mqtt3AsyncClient`: Declares an MQTT client object that will be used to interact with the MQTT broker. The `lateinit` keyword indicates that this variable will be initialized later.
+
+---
+
+**onCreate Method**:
+- `override fun onCreate(savedInstanceState: Bundle?)`: This method is called when the activity is first created. It's the entry point for initializing the activity's UI and setting up necessary variables.
+    - `setContentView(R.layout.activity_main)`: Sets the layout for the activity using the XML layout defined in `activity_main`.
+    - `var webView = findViewById<WebView>(R.id.webView)`: Initializes the WebView UI component, which will be used to display the captured image.
+    - `var editTextText = findViewById<EditText>(R.id.editTextText)`: Initializes the EditText UI component, which will display the MQTT broker's IP address.
+    - `val mqttBroker = "10.21.70.16"`: A string variable holding the default IP address of the MQTT broker.
+    - `editTextText.setText(mqttBroker)`: Sets the default MQTT broker IP address in the EditText UI component.
+
+---
+
+**MQTT Client Setup and Connection**:
+- `client = MqttClient.builder()`: Initializes the MQTT client, setting it up to use MQTT version 3.
+- `.identifier("AndroidClient-1231231234")`: Sets a unique identifier for the MQTT client, distinguishing it from other potential clients communicating with the MQTT broker.
+- `.serverHost(mqttBroker)`: Specifies the MQTT broker's IP address to which the client will connect.
+- `.buildAsync()`: Asynchronously builds the MQTT client using the provided configurations.
+  
+- `client.connect()`: Initiates a connection to the MQTT broker.
+    - `.whenComplete { _, throwable -> ... }`: Specifies a callback function to handle the result of the connection attempt. It takes two parameters, one for the result and another for any throwable (exception or error) that might occur.
+        - Within this callback:
+            - If `throwable` is not null, it indicates an error occurred while connecting.
+            - Else, the client has successfully connected to the broker.
+
+---
+
+**Subscribing to an MQTT Topic**:
+- Once connected, the app subscribes to an MQTT topic to listen for messages:
+    - `client.subscribeWith()`: Starts the subscription process.
+        - `.topicFilter("W5300-MQTT")`: Specifies the topic to which the client subscribes. This topic will be the channel through which the STM32 Nucleo-144 board sends the captured image's URL.
+        - `.qos(MqttQos.AT_LEAST_ONCE)`: Sets the Quality of Service (QoS) level to ensure that messages are received at least once.
+        - `.callback { message -> ... }`: Defines a callback function to handle incoming messages on this topic. Within this callback:
+            - `val imageUrl = message.payloadAsBytes.toString(Charsets.UTF_8)`: Extracts the image URL from the received message.
+            - `runOnUiThread { ... }`: Ensures that UI operations are executed on the main UI thread. This is required as UI operations cannot be performed from background threads.
+                - `webView.loadUrl(imageUrl)`: Loads the received image URL in the WebView, effectively displaying the captured image.
+
+---
+
+**Sending MQTT Message on Button Click**:
+- `findViewById<Button>(R.id.buttonSend).setOnClickListener { ... }`: Attaches a click listener to a button (with the ID `buttonSend`).
+    - Within the click listener:
+        - `client.publishWith()`: Initiates the process to send a message over MQTT.
+            - `.topic("MQTT-W5300")`: Specifies the topic on which the message will be published. The STM32 Nucleo-144 board will be listening on this topic for capture commands.
+            - `.qos(MqttQos.AT_LEAST_ONCE)`: Sets the QoS level.
+            - `.payload("cmd:capture".toByteArray())`: Sends the payload "cmd:capture" as the message. This command prompts the STM32 Nucleo-144 board to capture an image using the OpenMV camera.
+            - `.send()`: Finalizes and sends the MQTT message.
+
+---
+
+**onDestroy Method**:
+- `override fun onDestroy()`: This method is called when the activity is being destroyed, typically as a result of the user navigating away from the app, the activity finishing its operations, or the system reclaiming resources.
+    - `client.disconnect()`: Before the activity is destroyed, it disconnects from the MQTT broker, ensuring that resources are freed and the connection is closed gracefully.
+    - `super.onDestroy()`: Calls the `onDestroy` method of the superclass (`AppCompatActivity`), which handles additional cleanup tasks. It's important to call this to ensure that all necessary cleanup operations are performed.
+
+---
+
+In summary, this Android app's `MainActivity.kt`:
+
+1. Initializes the user interface components, including a WebView to display the captured image and an EditText to display the MQTT broker's IP address.
+2. Sets up an MQTT client to interact with the MQTT broker.
+3. Once connected, subscribes to the "W5300-MQTT" topic to receive image URLs from the STM32 Nucleo-144 board.
+4. Provides a button for the user to send a capture command to the STM32 Nucleo-144 board via the "MQTT-W5300" topic.
+5. Displays the received image in the WebView.
+6. Ensures that the MQTT connection is terminated gracefully when the activity is destroyed.
+
+The app serves as an interface for users to request image captures and view the results, bridging the gap between the STM32 Nucleo-144 board's operations and the end-user.
