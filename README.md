@@ -272,6 +272,7 @@ This `serial_read_data` function ensures efficient and segmented reading of larg
 
 The `serial_read_data0` function is crucial for ensuring efficient and error-tolerant data reading from the OpenMV camera. By managing timeouts and chunked data reading, it offers a robust mechanism to retrieve image data for further processing or transmission.
 
+
 ## OpenMV Code explanations
 
 **Imports**:
