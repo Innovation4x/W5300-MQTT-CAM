@@ -30,8 +30,8 @@
    
    **Implementation and Operation:**
 
-<img width="993" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/Static/BlockDiagram.png">
-   
+<img width="993" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
+
    - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
    
    - **OpenMV Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
