@@ -70,7 +70,7 @@
 
 To configure Arduino environment for STM32 Nucleo-144 (F429ZI), you need to follow the instructions of WIZnet official website. 
 
-[LINK](https://github.com/Wiznet/W5300-TOE-MicroPython/blob/main/static/GettingStart.md")
+[LINK](https://github.com/Wiznet/W5300-TOE-Arduino/blob/main/Static/documents/getting_started.md)
 
 
    ## OpenMV Camera environment
