@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         var webView = findViewById<WebView>(R.id.webView)
         var editTextText = findViewById<EditText>(R.id.editTextText)
-        val mqttBroker = "10.21.70.16"
+        val mqttBroker = "44.195.202.69"
 
         editTextText.setText(mqttBroker)
 
@@ -44,9 +44,10 @@ class MainActivity : AppCompatActivity() {
                         .callback { message ->
                             val imageUrl = message.payloadAsBytes.toString(Charsets.UTF_8)
                             //Log.d("W5300-MQTT", imageUrl)
-                            runOnUiThread {
-                                webView.loadUrl(imageUrl)
-                            }
+                            if (imageUrl.startsWith("http:"))
+                                runOnUiThread {
+                                    webView.loadUrl(imageUrl)
+                                }
                         }
                         .send()
 

@@ -9,7 +9,6 @@ It receives a captured image via the Serial port and send it to the HTTP server 
 Once it receives a HTTPP response, it publish the response to the MQTT broker.
 */
 
-
 #include <Ethernet.h>
 #include <Wire.h>
 // MQTT [[ 
@@ -40,8 +39,8 @@ IPAddress ip(192, 168, 0, 77);
 //IPAddress ip(10, 5, 15, 109);
 
 // Enter the IP address of the server you're connecting to:
-//IPAddress server(192, 168, 100, 2);
-IPAddress server(10, 21, 70, 16);
+IPAddress server(192, 168, 0, 107);
+//IPAddress server(10, 21, 70, 16);
 //IPAddress server(44, 195, 202, 69);
 IPAddress myDns(192, 168, 0, 1);
 uint16_t port = 5000;
@@ -56,7 +55,8 @@ byte img_buf[max_buffer];
 EthernetClient client;
 
 //[ MQTT
-IPAddress mqtt_server(10, 21, 70, 16);
+//IPAddress mqtt_server(10, 21, 70, 16);
+IPAddress mqtt_server(44, 195, 202, 69);
 EthernetClient mqttClient;
 PubSubClient mqtt_client(mqttClient);
 bool capture_requested = 0;
@@ -94,13 +94,15 @@ void httpPostForm(byte *imageData, uint32_t imageSize) {
   requestBody += "\r\n--ArduinoBoundary_OpenMVCam1\r\n";
   requestBody += "Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"\r\n\r\n";
 
+  //requestBody.append(imageData, imageSize);
+
   // Append the closing boundary
   String requestBodyEnd = "";
   requestBodyEnd += "\r\n--ArduinoBoundary_OpenMVCam1--\r\n";
 
   // Prepare the POST request headers
   String requestHeaders = "POST /upload HTTP/1.1\r\n";
-  requestHeaders += "Host: 10.21.70.16:5000\r\n";
+  requestHeaders += "Host: 192.168.0.107:5000\r\n";
   requestHeaders += "Content-Type: multipart/form-data; boundary=ArduinoBoundary_OpenMVCam1\r\n";
   requestHeaders += "Connection: close\r\n";
   requestHeaders += "Content-Length: " + String(requestBody.length()+imageSize+requestBodyEnd.length()) + "\r\n\r\n";
@@ -233,12 +235,15 @@ void reconnect() {
 //===================================================================================================
 
 void setup() {
-    // Open serial communications for W5300-TOE-Shield and wait for port to open:
+    // Open serial communications and wait for port to open:
   Serial3.setRx(PC11);
   Serial3.setTx(PC10);  
   delay(50);
   
-  // Open serial communications for OpenMV camera and wait for port to open:
+  // Open serial communications and wait for port to open:
+#ifdef SERIAL_OUTPUT
+  Serial.begin(9600);
+#else
   Serial.setRx(0);
   Serial.setTx(1);  
   //Serial.begin(1000000);
@@ -246,7 +251,7 @@ void setup() {
   //Serial.begin(38400);
   //Serial.begin(19200);
   delay(50);
-
+#endif
 
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
@@ -311,9 +316,9 @@ void loop() {
 
     uint32_t length = serial_read_length();
     if (length > 0) {
-      //String response = "Length: ";
-      //response += length;
-      //mqtt_client.publish("W5300-MQTT", response.c_str());
+      String response = "Length: ";
+      response += length;
+      mqtt_client.publish("W5300-MQTT", response.c_str());
       
       uint32_t received = serial_read_data(img_buf, length);
       if (received != length) {
