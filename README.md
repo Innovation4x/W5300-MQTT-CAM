@@ -22,7 +22,7 @@
 6. **Tags (max 5):**
    - W5300
    - MQTT
-   - OpenMV
+   - OpenMV H7
    - IoT
    - Vision Applications
 
@@ -36,7 +36,7 @@
 
    - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
    
-   - **OpenMV Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
+   - **OpenMV H7 Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV camera module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
    
    - **Flask Web Service:** As a lightweight yet robust web framework, Flask handles the image reception using the POST method. Once the image is uploaded, it is stored and an HTTP URL is generated. This URL offers a direct path for any internet-connected device to access the image.
    
@@ -63,13 +63,69 @@
    
    - **Environment Monitoring:** By pairing with environmental sensors, images can be captured alongside data like temperature or humidity, providing a more comprehensive view of a location.
 
-   **Conclusion**
-   
-   The W5300-MQTT-Cam project opens up new horizons in the W5300-TOE-Shield-based IoT landscape. It offers a practical and innovative way to leverage image capturing with IoT devices, making it a compelling solution for various applications.
 
 
 
-## Arduino Code explanations
+# Getting started!
+
+   **Arduino environment**
+
+To configure Arduino environment for STM32 Nucleo-144 (F429ZI), you need to follow the instructions of WIZnet official website. 
+
+[LINK](https://github.com/Wiznet/W5300-TOE-MicroPython/blob/main/static/GettingStart.md")
+
+
+   **OpenMV Camera environment**
+
+To configure OpenMV environment, you need to follow the instructions of OpenMV official website. 
+
+[LINK](https://docs.openmv.io/openmvcam/tutorial/index.html)
+
+
+   **Flask web application environment**
+
+To configure and run the Flask web server, follow these steps:
+
+1. **Environment Setup**:
+   - Ensure you have Python installed on your system.
+   - Create a virtual environment to manage dependencies. This is optional but recommended to avoid any conflicts with other Python projects:
+     ```bash
+     python -m venv venv_name
+     source venv_name/bin/activate  # On Windows: .\venv_name\Scripts\activate
+     ```
+
+2. **Install Necessary Libraries**:
+   - Navigate to the directory containing your Python script and install the required libraries:
+     ```bash
+     pip install flask InfluxDB
+     ```
+
+3. **Directory Structure**:
+   - Create a directory named `images` in the same location as your Python script. This is where uploaded images will be stored.
+   - If you have an `index.html` file (as referenced in the code), ensure it's located within a `templates` directory in the same location as your Python script.
+
+4. **InfluxDB Setup**:
+   - The code sis using InfluxDB. Ensure that InfluxDB is installed and running on your system.
+   - The code references a module `InfluxDB_v1`, so make sure this module is present in your project directory or is available in your Python path.
+   - Update any necessary configurations for InfluxDB, such as database credentials, within the `InfluxDB_v1` module or directly in your main script.
+
+5. **Run the Flask Application**:
+   - Set the Flask environment variables and run the application:
+     ```bash
+     export FLASK_APP=ImageUplader1.py
+     export FLASK_ENV=development
+     flask run --host=0.0.0.0
+     ```
+
+6. **Access and Test the Web Server**:
+   - Once the Flask server is running, navigate to `http://127.0.0.1:5000/` in your browser.
+   - Use the interface (if available) or a tool like `curl` or Postman to POST an image to the `/upload` route and test the image uploading functionality.
+
+
+
+# Source codes
+
+## Arduino (W5300-MQTT-CAM2.ino) Code explanations
 
 **Function**: `client_write_large(byte *bptr, size_t len)`
 - **Purpose**: This function is designed to handle the sending of large data segments over the Ethernet client. Given the constraints of the W5300-TOE-Shield's buffer size and the potential size of image data from the OpenMV camera, this function is crucial for ensuring data is sent efficiently and without overflow.
