@@ -34,8 +34,6 @@
    
    **Implementation and Operation:**
 
-<img width="800" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
-
    - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
    
    - **OpenMV Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
@@ -45,7 +43,10 @@
    - **MQTT Broker:** The choice of MQTT is deliberate, given its lightweight nature and ability to facilitate communication between a myriad of devices with minimal overhead. The broker effectively handles the communication requests from the Android app and directs the STM32 board to activate the OpenMV camera module.
    
    - **Android App:** The user-friendly interface allows users to send camera capture commands and view the resultant images. This immediate feedback loop ensures that users can take corrective actions, like adjusting the camera angle or settings, if necessary.
-   
+
+<img width="800" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
+
+
    **Creativity and Reusability:**
    
    The brilliance of the W5300-MQTT-Cam project lies not just in its innovative combination of vision and IoT, but also in its modular design. Each component, from the WIZnet shield to the Flask service, can be repurposed or extended for diverse applications. For instance, while the current focus is on image capture, the same framework can be extended to video capture, or integrating sensors to capture environmental data alongside images. This inherent reusability makes the project a valuable asset for developers and industries alike.
