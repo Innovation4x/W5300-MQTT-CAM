@@ -8,21 +8,25 @@
 
 3. **Hardware Components:**
    - WIZnet W5300-TOE-Shield for ethernet connection on STM32 Nucleo-144 boards.
-   - OpenMV camera module on the STM32 Nucleo-144 board.
+   - OpenMV H7 camera module on the STM32 Nucleo-144 board.
 
-4. **Software Components:**
+   **Circuit Diagram**
+<img width="993" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/CircuitDiagram.png">
+
+   
+5. **Software Components:**
    - Flask web service for receiving captured images using the POST method.
    - MQTT broker for connecting W5300-TOE-Shield and other MQTT clients.
    - Android app for controlling camera capture and displaying the captured image.
 
-5. **Tags (max 5):**
+6. **Tags (max 5):**
    - W5300
    - MQTT
    - OpenMV
    - IoT
    - Vision Applications
 
-6. **Descriptions (As detailed as possible):**
+7. **Descriptions (As detailed as possible):**
 
    **Introduction:**
    
