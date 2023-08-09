@@ -9,10 +9,6 @@
 3. **Hardware Components:**
    - WIZnet W5300-TOE-Shield for ethernet connection on STM32 Nucleo-144 boards.
    - OpenMV H7 camera module on the STM32 Nucleo-144 board.
-
-   **Circuit Diagram**
-<img width="600" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/CircuitDiagram.png">
-
    
 5. **Software Components:**
    - Flask web service for receiving captured images using the POST method.
@@ -43,6 +39,9 @@
    - **MQTT Broker:** The choice of MQTT is deliberate, given its lightweight nature and ability to facilitate communication between a myriad of devices with minimal overhead. The broker effectively handles the communication requests from the Android app and directs the STM32 board to activate the OpenMV camera module.
    
    - **Android App:** The user-friendly interface allows users to send camera capture commands and view the resultant images. This immediate feedback loop ensures that users can take corrective actions, like adjusting the camera angle or settings, if necessary.
+
+
+   **Block Diagram**
 
 <img width="800" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
 
@@ -165,6 +164,27 @@ To configure and run the Flask web server, follow these steps:
 
 8. **Deployment**:
    - Once you've tested the app and ensured it works as expected, you can prepare it for release. Build a signed APK or App Bundle through Android Studio, and then distribute it via the Google Play Store or other methods.
+
+## H/W configuration
+
+**Circuit Diagram**
+
+<img width="600" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/CircuitDiagram.png">
+
+
+**Hardware Configuration for OpenMV Camera Module and STM32 Nucleo-144 Board**:
+
+1. **Prepare Both Modules**:
+   - Ensure both the STM32 Nucleo-144 board and the OpenMV camera module are powered off to prevent any accidental shorts or damage.
+   - Lay out both modules on a non-conductive surface.
+
+2. **Serial Connection**:
+   - Connect the **TX pin (pin 1)** of the STM32 Nucleo-144 board to the **UART3_RX (P5)** pin of the OpenMV camera module. This will allow the Nucleo-144 board to transmit data which the OpenMV camera module will receive.
+   - Connect the **RX pin (pin 0)** of the STM32 Nucleo-144 board to the **UART3_TX (P4)** pin of the OpenMV camera module. This setup ensures the Nucleo-144 board can receive data transmitted by the OpenMV camera module.
+
+3. **Power Connection**:
+   - Connect the **GND** (Ground) pin of the OpenMV camera module to the **GND** pin of the STM32 Nucleo-144 board. This establishes a common ground between the two devices.
+   - Connect the **VCC** pin of the OpenMV camera module to the **VCC** (or an appropriate power supply pin, depending on the voltage requirements of the OpenMV) pin of the STM32 Nucleo-144 board. This will power the camera module.
 
 
 # Source codes
