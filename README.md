@@ -41,7 +41,7 @@
    - **Android App:** The user-friendly interface allows users to send camera capture commands and view the resultant images. This immediate feedback loop ensures that users can take corrective actions, like adjusting the camera angle or settings, if necessary.
 
 
-   **Block Diagram**
+   **[Block Diagram]**
 
 <img width="800" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
 
