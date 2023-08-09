@@ -29,7 +29,9 @@
    The digital era has seen an explosive growth of IoT devices, but the integration of vision applications within IoT frameworks remains underexplored. The W5300-MQTT-Cam project is a pioneering step into this frontier, binding the power of vision applications to IoT devices. Utilizing the prowess of the W5300-TOE-Shield, this project not only enables the capture of images but also their dissemination and access via established protocols like MQTT and HTTP. Such integrations point to a future where vision-enabled IoT devices can be implemented across numerous industries, changing the way we perceive and utilize IoT.
    
    **Implementation and Operation:**
-   
+
+<img width="993" alt="Block Diagram" src="https://github.com/Innovation4x/W5300-MQTT-CAM/blob/main/Static/BlockDiagram.png">
+
    - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
    
    - **OpenMV Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
