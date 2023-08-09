@@ -7,8 +7,8 @@
    An IoT solution utilizing W5300-TOE-Shield for capturing images, accessible via MQTT & HTTP.
 
 3. **Hardware Components:**
-   - WIZnet W5300-TOE-Shield for ethernet connection on STM32 Nucleo-144 boards.
-   - OpenMV H7 camera module on the STM32 Nucleo-144 board.
+   - WIZnet W5300-TOE-Shield for ethernet connection on STM32 Nucleo-144 (F429ZI) boards.
+   - OpenMV H7 camera module on the STM32 Nucleo-144 (F429ZI) board.
    
 5. **Software Components:**
    - Flask web service for receiving captured images using the POST method.
@@ -30,7 +30,7 @@
    
    **Implementation and Operation:**
 
-   - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
+   - **WIZnet W5300-TOE-Shield:** This module is intricately connected to the STM32 Nucleo-144 (F429ZI) boards, acting as the linchpin for internet connectivity. With its high-speed data transmission capability, the shield ensures real-time or near-real-time transmission of images, depending on the chosen resolution.
    
    - **OpenMV H7 Camera Module:** Integrated with the STM32 Nucleo-144 board, the OpenMV camera module captures high-quality images on command. The communication protocol established through the serial port ensures a seamless transfer of image data.
    
@@ -61,7 +61,6 @@
    - **Retail:** In retail spaces, the setup can be employed to monitor customer footfalls, helping store owners to optimize space and product placements.
    
    - **Environment Monitoring:** By pairing with environmental sensors, images can be captured alongside data like temperature or humidity, providing a more comprehensive view of a location.
-
 
 
 
