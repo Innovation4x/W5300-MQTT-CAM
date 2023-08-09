@@ -95,7 +95,7 @@ To configure and run the Flask web server, follow these steps:
 2. **Install Necessary Libraries**:
    - Navigate to the directory containing your Python script and install the required libraries:
      ```bash
-     pip install flask InfluxDB
+     pip install flask influxdb influxdb-client
      ```
 
 3. **Directory Structure**:
