@@ -68,21 +68,21 @@
 
 # Getting started!
 
-   **Arduino environment**
+   ## Arduino environment
 
 To configure Arduino environment for STM32 Nucleo-144 (F429ZI), you need to follow the instructions of WIZnet official website. 
 
 [LINK](https://github.com/Wiznet/W5300-TOE-MicroPython/blob/main/static/GettingStart.md")
 
 
-   **OpenMV Camera environment**
+   ## OpenMV Camera environment
 
 To configure OpenMV environment, you need to follow the instructions of OpenMV official website. 
 
 [LINK](https://docs.openmv.io/openmvcam/tutorial/index.html)
 
 
-   **Flask web application environment**
+   ## Flask web application environment
 
 To configure and run the Flask web server, follow these steps:
 
@@ -121,6 +121,50 @@ To configure and run the Flask web server, follow these steps:
    - Once the Flask server is running, navigate to `http://127.0.0.1:5000/` in your browser.
    - Use the interface (if available) or a tool like `curl` or Postman to POST an image to the `/upload` route and test the image uploading functionality.
 
+
+## Android app environment
+
+**Configuration Steps for W5300-MQTT-Cam Android App:**
+
+1. **Development Environment Setup**:
+   - If not already done, install [Android Studio](https://developer.android.com/studio) and open it.
+   - Import the provided Android project.
+
+2. **Add Necessary Dependencies**:
+   - Since this app uses the HiveMQ MQTT client, ensure you have the required dependency in the `build.gradle` (Module: app) file:
+     ```gradle
+     implementation 'com.hivemq:hivemq-mqtt-client:1.2.1'
+     ```
+
+3. **MQTT Broker Configuration**:
+   - In `MainActivity.kt`, locate the line:
+     ```kotlin
+     val mqttBroker = "44.195.202.69"
+     ```
+   - If you have a different MQTT broker address, update this line accordingly.
+
+4. **UI Configuration**:
+   - Check the `activity_main.xml` layout file (located in the `res/layout` directory) to ensure all UI elements are properly defined and styled.
+   - If you want to customize the UI, make the necessary modifications in this XML file.
+
+5. **Network Permissions**:
+   - Ensure the app has permissions to access the internet and netwrk state. In the `AndroidManifest.xml` file, verify the inclusion of:
+     ```xml
+     <uses-permission android:name="android.permission.INTERNET" />
+     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+     ```
+
+6. **Functionality**:
+   - In `MainActivity.kt`, ensure that the MQTT client is correctly set up to send the "cmd:capture" command upon a specific user action (like pressing a button).
+   - Check the logic that handles the reception of the image URL and its display in the WebView.
+
+7. **Testing**:
+   - Run the app on an Android emulator or a physical device.
+   - Use the app interface to send the "cmd:capture" command.
+   - Verify that the app correctly displays the captured image URL or the image itself in the WebView.
+
+8. **Deployment**:
+   - Once you've tested the app and ensured it works as expected, you can prepare it for release. Build a signed APK or App Bundle through Android Studio, and then distribute it via the Google Play Store or other methods.
 
 
 # Source codes
