@@ -39,9 +39,9 @@ IPAddress ip(192, 168, 0, 77);
 //IPAddress ip(10, 5, 15, 109);
 
 // Enter the IP address of the server you're connecting to:
-IPAddress server(192, 168, 0, 107);
-//IPAddress server(10, 21, 70, 16);
-//IPAddress server(44, 195, 202, 69);
+//IPAddress http_server(192, 168, 0, 107);
+//IPAddress http_server(10, 21, 70, 16);
+const char *http_server = "10.21.70.16";
 IPAddress myDns(192, 168, 0, 1);
 uint16_t port = 5000;
 
@@ -102,7 +102,11 @@ void httpPostForm(byte *imageData, uint32_t imageSize) {
 
   // Prepare the POST request headers
   String requestHeaders = "POST /upload HTTP/1.1\r\n";
-  requestHeaders += "Host: 192.168.0.107:5000\r\n";
+  requestHeaders += "Host: ";
+  requestHeaders += http_server;
+  requestHeaders += ":";
+  requestHeaders += port;
+  requestHeaders += "\r\n";
   requestHeaders += "Content-Type: multipart/form-data; boundary=ArduinoBoundary_OpenMVCam1\r\n";
   requestHeaders += "Connection: close\r\n";
   requestHeaders += "Content-Length: " + String(requestBody.length()+imageSize+requestBodyEnd.length()) + "\r\n\r\n";
@@ -126,7 +130,7 @@ void http_postData(byte *buf, uint32_t length) {
   while (!client.connected()) {
     PRINTLN();
     PRINTLN("disconnected. Reconnecting...");
-    if (client.connect(server, port)) {
+    if (client.connect(http_server, port)) {
       PRINTLN("connected");
       break;
     } else {
@@ -329,7 +333,7 @@ void loop() {
       } else {
         // Send it to the server
         String response = "Image received: ";  // + length;
-        //mqtt_client.publish("W5300-MQTT", response.c_str());
+        mqtt_client.publish("W5300-MQTT", response.c_str());
         http_postData(img_buf, length);
       }
     } else {
