@@ -305,10 +305,10 @@ The `setup` function is critical for ensuring that the board is correctly initia
     2. **Image Capture Request Handling**:
         - If the `capture_requested` variable is set (which will be set by the MQTT callback function when a capture request is received), the board initiates the image capture process.
         - The serial buffer is flushed to remove any stale or unwanted data.
-        - A synchronization code (`SYNC`) is sent to the OpenMV camera over the serial port to signal an image capture request.
+        - A synchronization code ('0x96') is sent to the OpenMV camera over the serial port to signal an image capture request.
         
     3. **Receiving Image Data from OpenMV Camera**:
-        - The board then waits for a response from the OpenMV camera, which would contain the length of the captured image data.
+        - The board then waits for a response from the OpenMV camera, which contains the length of the captured image data.
         - If a valid length is received, the board proceeds to read the image data from the camera into a buffer (`img_buf`).
         - If the amount of data received does not match the expected length, a time-out error is assumed, and an error message is published to the "W5300-MQTT" topic.
         
