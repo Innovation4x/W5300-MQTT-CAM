@@ -110,7 +110,7 @@ To configure and run the Flask web server, follow these steps:
 5. **Run the Flask Application**:
    - Set the Flask environment variables and run the application:
      ```bash
-     export FLASK_APP=ImageUplader1.py
+     export FLASK_APP=ImageUploader1.py
      export FLASK_ENV=development
      flask run --host=0.0.0.0
      ```
