@@ -63,6 +63,10 @@
    - **Environment Monitoring:** By pairing with environmental sensors, images can be captured alongside data like temperature or humidity, providing a more comprehensive view of a location.
 
 
+## Demo Video
+
+[YouTube Video](https://youtu.be/dUGhUnpw9Aw)
+
 
 # Getting started!
 
